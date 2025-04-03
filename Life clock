@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساعت عمر</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/pinar-font@v1.0.0/dist/font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        body { text-align: center; font-family: 'Pinar', sans-serif; direction: rtl; background-color: #556B2F; color: white; padding: 20px; }
+        .container { background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        h1 { color: white; font-weight: bold; }
+        .clock { font-size: 18px; margin-top: 20px; color: white; }
+        input { padding: 10px; font-size: 16px; margin-top: 10px; border: 1px solid white; border-radius: 5px; background: transparent; color: white; font-family: 'Pinar', sans-serif; }
+        .message { margin-top: 20px; font-size: 16px; color: #FFD700; font-weight: bold; }
+        .goal { margin-top: 20px; font-size: 16px; color: #90EE90; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ساعت عمر</h1>
+        <label>تاریخ تولد خود را وارد کنید:</label>
+        <input type="date" id="dob" onchange="startClock()">
+        <div class="clock">
+            <p>زمان سپری شده: <span id="elapsed">---</span></p>
+            <p>زمان باقی‌مانده تا ۶۰ سالگی: <span id="remaining">---</span></p>
+        </div>
+        <div class="message" id="birthdayMessage"></div>
+        <div class="goal" id="goalMessage"></div>
+    </div><script>
+    let interval;
+    
+    function startClock() {
+        if (interval) clearInterval(interval);
+        let dobInput = document.getElementById("dob").value;
+        if (!dobInput) return;
+        let dob = new Date(dobInput);
+        let now = new Date();
+        let sixtyYearsLater = new Date(dob);
+        sixtyYearsLater.setFullYear(dob.getFullYear() + 60);
+        
+        function updateClock() {
+            let now = new Date();
+            let elapsed = now - dob;
+            let remaining = sixtyYearsLater - now;
+            let age = now.getFullYear() - dob.getFullYear();
+            
+            if (remaining < 0) {
+                document.getElementById("remaining").innerText = "زمان تلاش به پایان رسیده!";
+            } else {
+                document.getElementById("remaining").innerText = formatTime(remaining);
+            }
+            document.getElementById("elapsed").innerText = formatTime(elapsed);
+            checkBirthday(now, dob, age);
+            displayLifeAdvice(age);
+            displayGoalReminder(age);
+        }
+        
+        function formatTime(ms) {
+            let seconds = Math.floor(ms / 1000);
+            let minutes = Math.floor(seconds / 60);
+            let hours = Math.floor(minutes / 60);
+            let days = Math.floor(hours / 24);
+            let years = Math.floor(days / 365);
+            days %= 365; hours %= 24; minutes %= 60; seconds %= 60;
+            return `${years} سال، ${days} روز، ${hours} ساعت، ${minutes} دقیقه، ${seconds} ثانیه`;
+        }
+        
+        function checkBirthday(now, dob, age) {
+            if (now.getMonth() === dob.getMonth() && now.getDate() === dob.getDate()) {
+                document.getElementById("birthdayMessage").innerText = `🎉 تولدت مبارک! امروز ${age} ساله شدی! 🎉`;
+            } else {
+                document.getElementById("birthdayMessage").innerText = "";
+            }
+        }
+        
+        function displayLifeAdvice(age) {
+            let advice = "";
+            if (age < 20) {
+                advice = "این دوره زمان یادگیری و ساختن آینده است، مهارت‌های جدید یاد بگیر!";
+            } else if (age < 30) {
+                advice = "در این دهه روی حرفه و استقلال مالی تمرکز کن!";
+            } else if (age < 40) {
+                advice = "به فکر سرمایه‌گذاری و تثبیت آینده باش!";
+            } else if (age < 50) {
+                advice = "زمان توجه به سلامتی و کیفیت زندگی است!";
+            } else {
+                advice = "تجربیاتت را به دیگران منتقل کن و لذت ببر!";
+            }
+            document.getElementById("goalMessage").innerText = advice;
+        }
+        
+        function displayGoalReminder(age) {
+            if (age < 30) {
+                document.getElementById("goalMessage").innerText += "\n🎯 هدف بزرگت رو حداکثر تا ۳۰ سالگی مشخص کن و براش بجنگ!";
+            } else if (age < 40) {
+                document.getElementById("goalMessage").innerText += "\n🎯 این دهه زمان تثبیت موقعیت و رسیدن به استقلال کامل است!";
+            } else {
+                document.getElementById("goalMessage").innerText += "\n🎯 از دستاوردهایت لذت ببر و تجربیاتت را با دیگران به اشتراک بگذار!";
+            }
+        }
+        
+        updateClock();
+        interval = setInterval(updateClock, 1000);
+    }
+</script>
+
+</body>
+</html>
